@@ -8,13 +8,15 @@ export async function GET(req: Request) {
     try {
         const session = await getServerSession(authOptions);
 
-        if (!session?.user?.id) {
+        if (!session?.user || !('id' in session.user)) {
             return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
         }
 
+        const userId = Number(session.user.id); // Converte para número
+
         const jogadores = await prisma.jogador.findMany({
             where: {
-                usuarioId: Number.parseInt(session.user.id),
+                usuarioId: userId,
             },
             orderBy: {
                 nome: 'asc',
@@ -33,18 +35,20 @@ export async function POST(req: Request) {
     try {
         const session = await getServerSession(authOptions);
 
-        if (!session?.user?.id) {
+        if (!session?.user || !('id' in session.user)) {
             return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
         }
 
         const { nome, posicao, avaliacao } = await req.json();
+
+        const userId = Number(session.user.id); // Converte para número
 
         const jogador = await prisma.jogador.create({
             data: {
                 nome,
                 posicao,
                 avaliacao,
-                usuarioId: Number.parseInt(session.user.id),
+                usuarioId: userId,
             },
         });
 
