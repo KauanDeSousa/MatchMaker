@@ -18,6 +18,7 @@ interface Time {
     nome: string;
     jogadores: { id: number; nome: string; avaliacao: number }[];
     mediaAvaliacao: number;
+    status: string;
 }
 
 export default function NovaPartida() {
@@ -50,7 +51,8 @@ export default function NovaPartida() {
             }
 
             const data = await response.json();
-            setTimes(data);
+            const time = data.filter((time: { status: string }) => time.status === 'ativo');
+            setTimes(time);
         } catch (error) {
             console.error('Erro ao buscar times:', error);
             toast({
@@ -63,10 +65,42 @@ export default function NovaPartida() {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Implementação futura para iniciar partida
-        console.log('Iniciar partida:', { timeA, timeB });
+        setIsLoading(true);
+
+        try {
+            const response = await fetch('/api/partidas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    timeAId: timeA,
+                    timeBId: timeB,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao criar partida');
+            }
+
+            toast({
+                title: 'Sucesso',
+                description: 'Partida criada com sucesso',
+            });
+
+            router.push('/partidas');
+        } catch (error) {
+            console.error('Erro ao criar partida:', error);
+            toast({
+                title: 'Erro',
+                description: 'Não foi possível criar a partida',
+                variant: 'destructive',
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     if (status === 'loading' || isLoading) {

@@ -79,7 +79,7 @@ export async function POST(req: Request) {
                 timeAId: Number.parseInt(timeAId),
                 timeBId: Number.parseInt(timeBId),
                 usuarioId: userId,
-                status: 'em_andamento',
+                status: 'pausado',
             },
             include: {
                 timeA: true,

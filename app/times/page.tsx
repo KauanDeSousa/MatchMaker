@@ -14,6 +14,7 @@ interface Time {
     nome: string;
     jogadores: { id: number; nome: string; avaliacao: number }[];
     mediaAvaliacao: number;
+    status: string;
 }
 
 export default function Times() {
@@ -82,29 +83,31 @@ export default function Times() {
                 </Link>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 flex flex-col">
                 {times.map((time) => (
-                    <Card key={time.id} className="hover:shadow-md transition-shadow">
-                        <CardContent className="p-4">
-                            <div className="flex justify-between items-center mb-2">
-                                <h3 className="font-medium text-lg">{time.nome}</h3>
-                                <div className="flex items-center text-sm text-gray-500">
-                                    <Users className="h-4 w-4 mr-1" />
-                                    <span>{time.jogadores.length} jogadores</span>
-                                </div>
-                            </div>
-
-                            <div className="text-sm text-gray-500 mb-2">Média: {time.mediaAvaliacao.toFixed(1)} estrelas</div>
-
-                            <div className="grid grid-cols-2 gap-2">
-                                {time.jogadores.map((jogador) => (
-                                    <div key={jogador.id} className="text-sm">
-                                        {jogador.nome} ({jogador.avaliacao})
+                    <Link key={time.id} href={`/times/${time.id}`}>
+                        <Card className={`hover:shadow-md transition-shadow ${time.status !== 'ativo' ? 'border-red-800' : ''}`}>
+                            <CardContent className={`p-4 ${time.status !== 'ativo' ? 'bg-red-100 text-red-800' : ''}`}>
+                                <div className="flex justify-between items-center mb-2">
+                                    <h3 className="font-medium text-lg">{time.nome}</h3>
+                                    <div className="flex items-center text-sm text-gray-500">
+                                        <Users className="h-4 w-4 mr-1" />
+                                        <span>{time.jogadores.length} jogadores</span>
                                     </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
+                                </div>
+
+                                <div className="text-sm text-gray-500 mb-2">Média: {time.mediaAvaliacao.toFixed(1)} estrelas</div>
+
+                                <div className="grid grid-cols-2 gap-2">
+                                    {time.jogadores.map((jogador) => (
+                                        <div key={jogador.id} className="text-sm">
+                                            {jogador.nome} ({jogador.avaliacao})
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </Link>
                 ))}
             </div>
         </main>
