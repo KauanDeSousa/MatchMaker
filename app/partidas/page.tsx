@@ -1,40 +1,67 @@
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, Play, Pause, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { useToast } from '@/hooks/use-toast';
+
+interface Partida {
+    id: number;
+    data: string;
+    timeA: { id: number; nome: string }; // If timeA is an object
+    timeB: { id: number; nome: string }; // If timeB is an object
+    placarA: number;
+    placarB: number;
+    status: string;
+}
 
 export default function Partidas() {
-    // Dados de exemplo - seriam carregados do banco de dados
-    const partidas = [
-        {
-            id: 1,
-            data: '01/04/2025',
-            timeA: 'Time A',
-            timeB: 'Time B',
-            placarA: 3,
-            placarB: 2,
-            status: 'encerrado',
-        },
-        {
-            id: 2,
-            data: '01/04/2025',
-            timeA: 'Time C',
-            timeB: 'Time D',
-            placarA: 1,
-            placarB: 1,
-            status: 'em_andamento',
-        },
-        {
-            id: 3,
-            data: '01/04/2025',
-            timeA: 'Time E',
-            timeB: 'Time F',
-            placarA: 0,
-            placarB: 0,
-            status: 'pausado',
-        },
-    ];
+    const { status } = useSession();
+    const router = useRouter();
+    const { toast } = useToast();
+    const [partidas, setPartidas] = useState<Partida[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        if (status === 'unauthenticated') {
+            router.push('/login');
+            return;
+        }
+
+        if (status === 'authenticated') {
+            fetchPartidas();
+        }
+    }, [status, router]);
+
+    const fetchPartidas = async () => {
+        try {
+            const response = await fetch('/api/partidas');
+
+            if (!response.ok) {
+                throw new Error('Erro ao buscar partidas');
+            }
+
+            const data = await response.json();
+
+            console.log(data);
+
+            setPartidas(data);
+        } catch (error) {
+            console.error('Erro ao buscar jogadores:', error);
+            toast({
+                title: 'Erro',
+                description: 'Não foi possível carregar os jogadores',
+                variant: 'destructive',
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const getStatusBadge = (status: string) => {
         switch (status) {
@@ -74,6 +101,14 @@ export default function Partidas() {
         }
     };
 
+    if (status === 'loading' || isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-100">
+                <p>Carregando...</p>
+            </div>
+        );
+    }
+
     return (
         <main className="min-h-screen bg-gray-100 p-4">
             <div className="flex items-center justify-between mb-6">
@@ -97,16 +132,18 @@ export default function Partidas() {
                         <Card className="hover:shadow-md transition-shadow">
                             <CardContent className="p-4">
                                 <div className="flex justify-between items-center mb-2">
-                                    <div className="text-sm text-gray-500">{partida.data}</div>
+                                    <div className="text-sm text-gray-500">
+                                        {new Date(partida.data).toLocaleDateString()} {new Date(partida.data).toLocaleTimeString()}
+                                    </div>
                                     {getStatusBadge(partida.status)}
                                 </div>
 
                                 <div className="flex justify-between items-center">
-                                    <div className="text-lg font-medium">{partida.timeA}</div>
+                                    <div className="text-lg font-medium">{partida.timeA.nome}</div>
                                     <div className="text-xl font-bold">
                                         {partida.placarA} - {partida.placarB}
                                     </div>
-                                    <div className="text-lg font-medium">{partida.timeB}</div>
+                                    <div className="text-lg font-medium">{partida.timeB.nome}</div>
                                 </div>
 
                                 <div className="flex justify-center mt-2">{getStatusIcon(partida.status)}</div>
