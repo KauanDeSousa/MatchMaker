@@ -39,7 +39,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
         }
 
-        const { nome, posicao, avaliacao } = await req.json();
+        const { nome, posicao, avaliacao, status } = await req.json();
 
         const userId = Number(session.user.id); // Converte para número
 
@@ -49,6 +49,7 @@ export async function POST(req: Request) {
                 posicao,
                 avaliacao,
                 usuarioId: userId,
+                status,
             },
         });
 
