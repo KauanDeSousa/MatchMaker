@@ -21,7 +21,7 @@ export default function FormJogador({ params }: { params?: { value: string } }) 
     const [nome, setNome] = useState('');
     const [posicao, setPosicao] = useState('');
     const [avaliacao, setAvaliacao] = useState(3);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         if (status === 'unauthenticated') {
@@ -29,14 +29,13 @@ export default function FormJogador({ params }: { params?: { value: string } }) 
         }
 
         if (status === 'authenticated') {
-            if (!params?.value) return;
+            if (!params?.value) return setIsLoading(false);
             const parsedParams = JSON.parse(params.value);
             fetchJogador(parsedParams.id);
         }
     }, [status, router]);
 
     const fetchJogador = async (id: string) => {
-        console.log(id);
         try {
             const response = await fetch(`/api/jogadores/${id}`);
 
@@ -46,6 +45,9 @@ export default function FormJogador({ params }: { params?: { value: string } }) 
 
             const data = await response.json();
             console.log(data);
+            setNome(data.nome);
+            setPosicao(data.posicao);
+            setAvaliacao(data.avaliacao);
         } catch (error) {
             console.error('Erro ao buscar jogador:', error);
             toast({
@@ -62,9 +64,11 @@ export default function FormJogador({ params }: { params?: { value: string } }) 
         e.preventDefault();
         setIsLoading(true);
 
+        const route = !params?.value ? '/api/jogadores' : `/api/jogadores/${JSON.parse(params.value).id}`;
+
         try {
-            const response = await fetch('/api/jogadores', {
-                method: 'POST',
+            const response = await fetch(route, {
+                method: !params?.value ? 'POST' : 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -83,7 +87,7 @@ export default function FormJogador({ params }: { params?: { value: string } }) 
 
             toast({
                 title: 'Sucesso',
-                description: 'Jogador adicionado com sucesso',
+                description: !params?.value ? 'Jogador adicionado com sucesso' : 'Jogador editado com sucesso.',
             });
 
             router.push('/jogadores');
@@ -91,7 +95,7 @@ export default function FormJogador({ params }: { params?: { value: string } }) 
             console.error('Erro ao criar jogador:', error);
             toast({
                 title: 'Erro',
-                description: 'Não foi possível adicionar o jogador',
+                description: !params?.value ? 'Não foi possível adicionar o jogador' : 'Não foi possível editar o jogador',
                 variant: 'destructive',
             });
         } finally {
@@ -99,7 +103,7 @@ export default function FormJogador({ params }: { params?: { value: string } }) 
         }
     };
 
-    if (status === 'loading') {
+    if (status === 'loading' || isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-100">
                 <p>Carregando...</p>

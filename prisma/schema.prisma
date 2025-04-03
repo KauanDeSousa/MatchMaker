@@ -26,11 +26,12 @@ model Jogador {
   id        Int      @id @default(autoincrement())
   nome      String
   posicao   String
+  imagem    String  @default("")
+  status    String   @default("ativo") // ativo, inativo
   avaliacao Float
   usuarioId Int
   usuario   Usuario  @relation(fields: [usuarioId], references: [id])
-  timeId    Int?
-  time      Time?    @relation(fields: [timeId], references: [id])
+  times     Time[]   @relation("JogadoresTimes")
   eventos   Evento[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -41,7 +42,8 @@ model Time {
   nome      String
   usuarioId Int
   usuario   Usuario   @relation(fields: [usuarioId], references: [id])
-  jogadores Jogador[]
+  status    String   @default("ativo") // ativo, inativo
+  jogadores Jogador[] @relation("JogadoresTimes")
   partidasA Partida[] @relation("TimeA")
   partidasB Partida[] @relation("TimeB")
   createdAt DateTime  @default(now())
@@ -57,7 +59,7 @@ model Partida {
   timeB     Time     @relation("TimeB", fields: [timeBId], references: [id])
   placarA   Int      @default(0)
   placarB   Int      @default(0)
-  status    String   @default("agendada") // agendada, em_andamento, finalizada
+  status    String   @default("pausado") // pausado, em_andamento, encerrado, cancelada
   duracao   Int      @default(0) // em segundos
   usuarioId Int
   usuario   Usuario  @relation(fields: [usuarioId], references: [id])
