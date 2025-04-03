@@ -19,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="pt-BR" suppressHydrationWarning>
             <body className={inter.className}>
                 <SessionProvider>
-                    <ThemeProvider attribute="class" defaultTheme="light">
+                    <ThemeProvider attribute="class" defaultTheme="ligth">
                         {children}
                         <Toaster />
                     </ThemeProvider>

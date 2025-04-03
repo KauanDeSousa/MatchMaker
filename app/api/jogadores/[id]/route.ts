@@ -8,7 +8,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     try {
         const session = await getServerSession(authOptions);
 
-        if (!session?.user || !('id' in session.user)) {1
+        if (!session?.user || !('id' in session.user)) {
+            1;
             return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
         }
 
@@ -46,7 +47,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
         const userId = Number(session.user.id);
 
-        const { nome, posicao, avaliacao } = await req.json();
+        const { nome, posicao, avaliacao, status } = await req.json();
 
         // Verificar se o jogador existe e pertence ao usuário
         const jogadorExistente = await prisma.jogador.findUnique({
@@ -71,6 +72,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
                 nome,
                 posicao,
                 avaliacao,
+                status,
             },
         });
 

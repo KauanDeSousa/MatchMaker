@@ -19,6 +19,7 @@ export default function FormJogador({ params }: { params?: { value: string } }) 
     const router = useRouter();
     const { toast } = useToast();
     const [nome, setNome] = useState('');
+    const [statusJogador, setStatusJogador] = useState('ativo');
     const [posicao, setPosicao] = useState('');
     const [avaliacao, setAvaliacao] = useState(3);
     const [isLoading, setIsLoading] = useState(true);
@@ -44,8 +45,8 @@ export default function FormJogador({ params }: { params?: { value: string } }) 
             }
 
             const data = await response.json();
-            console.log(data);
             setNome(data.nome);
+            setStatusJogador(data.status);
             setPosicao(data.posicao);
             setAvaliacao(data.avaliacao);
         } catch (error) {
@@ -76,6 +77,7 @@ export default function FormJogador({ params }: { params?: { value: string } }) 
                     nome,
                     posicao,
                     avaliacao,
+                    status: statusJogador,
                 }),
             });
 
@@ -134,6 +136,19 @@ export default function FormJogador({ params }: { params?: { value: string } }) 
                             required
                             disabled={isLoading}
                         />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="posicao">Status</Label>
+                        <Select value={statusJogador} onValueChange={setStatusJogador} required disabled={isLoading}>
+                            <SelectTrigger id="posicao">
+                                <SelectValue placeholder="Selecione..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="ativo">Ativo</SelectItem>
+                                <SelectItem value="inativo">Inativo</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     <div className="space-y-2">
