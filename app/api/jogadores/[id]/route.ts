@@ -8,7 +8,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     try {
         const session = await getServerSession(authOptions);
 
-        if (!session?.user || !('id' in session.user)) {
+        if (!session?.user || !('id' in session.user)) {1
             return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
         }
 

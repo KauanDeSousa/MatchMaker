@@ -7,10 +7,11 @@ import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, Users, Shuffle } from 'lucide-react';
+import { ArrowLeft, Users, Shuffle, Edit } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Jogador {
     id: number;
@@ -175,7 +176,7 @@ export default function GerarTimes() {
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Voltar
                 </Link>
-                <h1 className="text-xl font-bold text-green-800">Gerar Times</h1>
+                <h1 className="text-xl font-bold text-green-800">Editar Times</h1>
                 <div className="w-6"></div> {/* Espaçador para centralizar o título */}
             </div>
 
@@ -183,28 +184,20 @@ export default function GerarTimes() {
                 <CardContent className="p-4">
                     <div className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="quantidade">Quantidade de Times</Label>
-                            <Input
-                                id="quantidade"
-                                type="number"
-                                min={2}
-                                max={6}
-                                value={quantidadeTimes}
-                                onChange={(e) => setQuantidadeTimes(Number.parseInt(e.target.value))}
-                                disabled={isGerando}
-                            />
+                            <Label htmlFor="quantidade">Nome do time</Label>
+                            <Input id="quantidade" type="text" disabled={isGerando} />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="quantidadeJogadores">Quantidade de Jogadores por Time</Label>
-                            <Input
-                                id="quantidadeJogadores"
-                                type="number"
-                                min={2}
-                                max={11}
-                                value={quantidadeJogadoresTimes}
-                                onChange={(e) => setQuantidadeJogadoresTimes(Number.parseInt(e.target.value))}
-                                disabled={isGerando}
-                            />
+                            <Label htmlFor="posicao">Status</Label>
+                            <Select required disabled={isLoading}>
+                                <SelectTrigger id="posicao">
+                                    <SelectValue placeholder="Selecione..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="ativo">Ativo</SelectItem>
+                                    <SelectItem value="inativo">Inativo</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         <div>
@@ -239,7 +232,7 @@ export default function GerarTimes() {
                                 'Gerando...'
                             ) : (
                                 <>
-                                    <Shuffle className="mr-2 h-4 w-4" /> Gerar Times
+                                    <Edit className="h-4 w-4" /> Editar time
                                 </>
                             )}
                         </Button>
