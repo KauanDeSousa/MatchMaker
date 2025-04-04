@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Header } from '@/components/header';
+import { Loading } from '@/components/loading';
 
 interface Jogador {
     avaliacao: number;
@@ -122,70 +124,66 @@ export default function FormTime({ params }: { params: { value: string } }) {
     };
 
     if (status === 'loading' || isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-100">
-                <p>Carregando...</p>
-            </div>
-        );
+        return <Loading />;
     }
 
     return (
-        <main className="min-h-screen bg-gray-100 p-4">
-            <div className="flex items-center justify-between mb-6">
+        <main className="min-h-screen bg-gray-100">
+            <Header titulo={'Editar Time'}>
                 <Link href="/times" className="flex items-center text-green-800">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Voltar
                 </Link>
-                <h1 className="text-xl font-bold text-green-800">Editar Time</h1>
-                <div className="w-6"></div> {/* Espaçador para centralizar o título */}
-            </div>
+            </Header>
 
-            <Card className="mb-4">
-                <CardContent className="p-4">
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="quantidade">Nome do time</Label>
-                            <Input value={nome} onChange={(e) => setNome(e.target.value)} id="quantidade" type="text" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="posicao">Status</Label>
-                            <Select value={statusTime} onValueChange={setStatusTime} required disabled={isLoading}>
-                                <SelectTrigger id="posicao">
-                                    <SelectValue placeholder="Selecione..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="ativo">Ativo</SelectItem>
-                                    <SelectItem value="inativo">Inativo</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div>
-                            <h3 className="font-medium mb-2">Jogadores</h3>
-                            <div className="space-y-2 max-h-60 overflow-y-auto">
-                                {time &&
-                                    time.jogadores.map((jogador) => (
-                                        <div key={jogador.id} className="flex items-center space-x-2">
-                                            <Label htmlFor={`jogador-${jogador.id}`} className="flex-1">
-                                                {jogador.nome} ({jogador.avaliacao}) - {jogador.posicao}
-                                            </Label>
-                                        </div>
-                                    ))}
+            <div className="p-4">
+                <Card className="mb-4">
+                    <CardContent className="p-4">
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="quantidade">Nome do time</Label>
+                                <Input value={nome} onChange={(e) => setNome(e.target.value)} id="quantidade" type="text" />
                             </div>
-                        </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="posicao">Status</Label>
+                                <Select value={statusTime} onValueChange={setStatusTime} required disabled={isLoading}>
+                                    <SelectTrigger id="posicao">
+                                        <SelectValue placeholder="Selecione..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="ativo">Ativo</SelectItem>
+                                        <SelectItem value="inativo">Inativo</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
 
-                        <Button type="submit" className="w-full bg-green-700 hover:bg-green-800" disabled={isLoading}>
-                            {isLoading ? (
-                                'Salvando...'
-                            ) : (
-                                <>
-                                    <Edit className="h-4 w-4" /> Editar time
-                                </>
-                            )}
-                        </Button>
-                    </form>
-                </CardContent>
-            </Card>
+                            <div>
+                                <h3 className="font-medium mb-2">Jogadores</h3>
+                                <div className="space-y-2 max-h-60 overflow-y-auto">
+                                    {time &&
+                                        time.jogadores.map((jogador) => (
+                                            <div key={jogador.id} className="flex items-center space-x-2">
+                                                <Label htmlFor={`jogador-${jogador.id}`} className="flex-1">
+                                                    {jogador.nome} ({jogador.avaliacao}) - {jogador.posicao}
+                                                </Label>
+                                            </div>
+                                        ))}
+                                </div>
+                            </div>
+
+                            <Button type="submit" className="w-full bg-green-700 hover:bg-green-800" disabled={isLoading}>
+                                {isLoading ? (
+                                    'Salvando...'
+                                ) : (
+                                    <>
+                                        <Edit className="h-4 w-4" /> Editar time
+                                    </>
+                                )}
+                            </Button>
+                        </form>
+                    </CardContent>
+                </Card>
+            </div>
         </main>
     );
 }

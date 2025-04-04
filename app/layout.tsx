@@ -9,7 +9,7 @@ import { SessionProvider } from '@/components/session-provider';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-    title: 'Gerenciador de Futebol',
+    title: 'MatchMaker',
     description: 'Aplicativo para gerenciar partidas de futebol e criar times equilibrados',
     generator: 'v0.dev',
 };

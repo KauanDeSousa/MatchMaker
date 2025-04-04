@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { UserCircle, Users, Timer, BarChart, LogOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Header } from '@/components/header';
 
 export default function Dashboard() {
     const { data: session, status } = useSession();
@@ -33,25 +34,23 @@ export default function Dashboard() {
 
     return (
         <main className="min-h-screen bg-gray-100">
+            <Header titulo={`Olá, ${userName || 'Jogador'}!`}>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-1"
+                    onClick={() => {
+                        router.push('/api/auth/signout');
+                        toast({
+                            title: 'Logout realizado',
+                            description: 'Você foi desconectado com sucesso',
+                        });
+                    }}
+                >
+                    <LogOut className="h-4 w-4" /> Sair
+                </Button>
+            </Header>
             <div className="p-4">
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-base font-bold text-green-800">Olá, {userName || 'Jogador'}!</h1>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex items-center gap-1"
-                        onClick={() => {
-                            router.push('/api/auth/signout');
-                            toast({
-                                title: 'Logout realizado',
-                                description: 'Você foi desconectado com sucesso',
-                            });
-                        }}
-                    >
-                        <LogOut className="h-4 w-4" /> Sair
-                    </Button>
-                </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Link href="/jogadores" className="block">
                         <Card className="hover:shadow-md transition-shadow">
@@ -101,7 +100,6 @@ export default function Dashboard() {
                         </Card>
                     </Link>
                 </div>
-
                 <div className="mt-6">
                     <Button className="w-full bg-green-700 hover:bg-green-800">
                         <Link href="/partidas/nova">Iniciar Nova Partida</Link>

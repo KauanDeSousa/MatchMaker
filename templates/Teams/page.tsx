@@ -8,6 +8,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useToast } from '@/hooks/use-toast';
+import { Header } from '@/components/header';
+import { Loading } from '@/components/loading';
 
 interface Time {
     id: number;
@@ -59,56 +61,52 @@ export default function Times() {
     };
 
     if (status === 'loading' || isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-100">
-                <p>Carregando...</p>
-            </div>
-        );
+        return <Loading />;
     }
 
     return (
-        <main className="min-h-screen bg-gray-100 p-4">
-            <div className="flex items-center justify-between mb-6">
+        <main className="min-h-screen bg-gray-100 h-screen">
+            <Header titulo={`Times`}>
                 <Link href="/dashboard" className="flex items-center text-green-800">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Voltar
                 </Link>
-                <h1 className="text-xl font-bold text-green-800">Times</h1>
-                <div className="w-6"></div> {/* Espaçador para centralizar o título */}
-            </div>
+            </Header>
 
-            <div className="mb-4">
-                <Link href="/times/gerar">
-                    <Button className="w-full bg-green-700 hover:bg-green-800">Gerar Times Equilibrados</Button>
-                </Link>
-            </div>
-
-            <div className="space-y-4 flex flex-col">
-                {times.map((time) => (
-                    <Link key={time.id} href={`/times/${time.id}`}>
-                        <Card className={`hover:shadow-md transition-shadow ${time.status !== 'ativo' ? 'border-red-800' : ''}`}>
-                            <CardContent className={`p-4 ${time.status !== 'ativo' ? 'bg-red-100 text-red-800' : ''}`}>
-                                <div className="flex justify-between items-center mb-2">
-                                    <h3 className="font-medium text-lg">{time.nome}</h3>
-                                    <div className="flex items-center text-sm text-gray-500">
-                                        <Users className="h-4 w-4 mr-1" />
-                                        <span>{time.jogadores.length} jogadores</span>
-                                    </div>
-                                </div>
-
-                                <div className="text-sm text-gray-500 mb-2">Média: {time.mediaAvaliacao.toFixed(1)} estrelas</div>
-
-                                <div className="grid grid-cols-2 gap-2">
-                                    {time.jogadores.map((jogador) => (
-                                        <div key={jogador.id} className="text-sm">
-                                            {jogador.nome} ({jogador.avaliacao})
-                                        </div>
-                                    ))}
-                                </div>
-                            </CardContent>
-                        </Card>
+            <div className="p-4">
+                <div className="mb-4">
+                    <Link href="/times/gerar">
+                        <Button className="w-full bg-green-700 hover:bg-green-800">Gerar Times Equilibrados</Button>
                     </Link>
-                ))}
+                </div>
+
+                <div className="space-y-4 flex flex-col">
+                    {times.map((time) => (
+                        <Link key={time.id} href={`/times/${time.id}`}>
+                            <Card className={`hover:shadow-md transition-shadow ${time.status !== 'ativo' ? 'border-red-800' : ''}`}>
+                                <CardContent className={`p-4 ${time.status !== 'ativo' ? 'bg-red-100 text-red-800' : ''}`}>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <h3 className="font-medium text-lg">{time.nome}</h3>
+                                        <div className="flex items-center text-sm text-gray-500">
+                                            <Users className="h-4 w-4 mr-1" />
+                                            <span>{time.jogadores.length} jogadores</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="text-sm text-gray-500 mb-2">Média: {time.mediaAvaliacao.toFixed(1)} estrelas</div>
+
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {time.jogadores.map((jogador) => (
+                                            <div key={jogador.id} className="text-sm">
+                                                {jogador.nome} ({jogador.avaliacao})
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </Link>
+                    ))}
+                </div>
             </div>
         </main>
     );

@@ -9,7 +9,6 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         const session = await getServerSession(authOptions);
 
         if (!session?.user || !('id' in session.user)) {
-            1;
             return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
         }
 
@@ -17,7 +16,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 
         const jogador = await prisma.jogador.findUnique({
             where: {
-                id: Number.parseInt(params.id),
+                id: Number(params.id),
             },
         });
 
@@ -52,7 +51,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         // Verificar se o jogador existe e pertence ao usuário
         const jogadorExistente = await prisma.jogador.findUnique({
             where: {
-                id: Number.parseInt(params.id),
+                id: Number(params.id),
             },
         });
 
@@ -66,7 +65,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
         const jogadorAtualizado = await prisma.jogador.update({
             where: {
-                id: Number.parseInt(params.id),
+                id: Number(params.id),
             },
             data: {
                 nome,
