@@ -1,15 +1,21 @@
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient } from "@prisma/client";
 
-// Prevent multiple instances of Prisma Client in development
-declare global {
-  var prisma: PrismaClient | undefined
-}
+// Verifica se já existe uma instância do Prisma Client no globalThis
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
 
-const client = global.prisma || new PrismaClient()
+// Cria ou reutiliza a instância existente
+export const prisma = globalForPrisma.prisma ?? new PrismaClient();
 
+// Em desenvolvimento, salva a instância no globalThis para reutilização
 if (process.env.NODE_ENV !== "production") {
-  global.prisma = client
+  globalForPrisma.prisma = prisma;
 }
 
-export const prisma = client
+// Garante que o cliente está conectado
+prisma.$connect().catch((err) => {
+  console.error("Failed to connect to database:", err);
+  process.exit(1);
+});
 
