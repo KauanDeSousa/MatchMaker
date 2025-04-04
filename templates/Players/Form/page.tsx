@@ -13,6 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
+import { Loading } from '@/components/loading';
+import { Header } from '@/components/header';
 
 export default function FormJogador({ params }: { params?: { value: string } }) {
     const { status } = useSession();
@@ -106,92 +108,88 @@ export default function FormJogador({ params }: { params?: { value: string } }) 
     };
 
     if (status === 'loading' || isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-100">
-                <p>Carregando...</p>
-            </div>
-        );
+        return <Loading />;
     }
 
     return (
-        <main className="min-h-screen bg-gray-100 p-4">
-            <div className="flex items-center justify-between mb-6">
+        <main className="min-h-screen bg-gray-100">
+            <Header titulo={!params ? 'Novo Jogador' : 'Editar Jogador'}>
                 <Link href="/jogadores" className="flex items-center text-green-800">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Voltar
                 </Link>
-                <h1 className="text-xl font-bold text-green-800">{!params ? 'Novo Jogador' : 'Editar Jogador'}</h1>
-                <div className="w-6"></div> {/* Espaçador para centralizar o título */}
-            </div>
+            </Header>
 
-            <div className="bg-white rounded-xl shadow p-4">
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="nome">Nome</Label>
-                        <Input
-                            id="nome"
-                            value={nome}
-                            onChange={(e) => setNome(e.target.value)}
-                            placeholder="Nome do jogador"
-                            required
-                            disabled={isLoading}
-                        />
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor="posicao">Status</Label>
-                        <Select value={statusJogador} onValueChange={setStatusJogador} required disabled={isLoading}>
-                            <SelectTrigger id="posicao">
-                                <SelectValue placeholder="Selecione..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="ativo">Ativo</SelectItem>
-                                <SelectItem value="inativo">Inativo</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor="posicao">Posição</Label>
-                        <Select value={posicao} onValueChange={setPosicao} required disabled={isLoading}>
-                            <SelectTrigger id="posicao">
-                                <SelectValue placeholder="Selecione a posição" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="goleiro">Goleiro</SelectItem>
-                                <SelectItem value="defesa">Defesa</SelectItem>
-                                <SelectItem value="meio-campo">Meio-campo</SelectItem>
-                                <SelectItem value="atacante">Atacante</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor="avaliacao">Avaliação: {avaliacao}</Label>
-                        <div className="py-4">
-                            <Slider
-                                id="avaliacao"
-                                min={1}
-                                max={5}
-                                step={0.5}
-                                value={[avaliacao]}
-                                onValueChange={(value) => setAvaliacao(value[0])}
+            <div className="p-4">
+                <div className="bg-white rounded-xl shadow p-4">
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="nome">Nome</Label>
+                            <Input
+                                id="nome"
+                                value={nome}
+                                onChange={(e) => setNome(e.target.value)}
+                                placeholder="Nome do jogador"
+                                required
                                 disabled={isLoading}
                             />
-                            <div className="flex justify-between text-xs text-gray-500 mt-1">
-                                <span>1</span>
-                                <span>2</span>
-                                <span>3</span>
-                                <span>4</span>
-                                <span>5</span>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="posicao">Status</Label>
+                            <Select value={statusJogador} onValueChange={setStatusJogador} required disabled={isLoading}>
+                                <SelectTrigger id="posicao">
+                                    <SelectValue placeholder="Selecione..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="ativo">Ativo</SelectItem>
+                                    <SelectItem value="inativo">Inativo</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="posicao">Posição</Label>
+                            <Select value={posicao} onValueChange={setPosicao} required disabled={isLoading}>
+                                <SelectTrigger id="posicao">
+                                    <SelectValue placeholder="Selecione a posição" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="goleiro">Goleiro</SelectItem>
+                                    <SelectItem value="defesa">Defesa</SelectItem>
+                                    <SelectItem value="meio-campo">Meio-campo</SelectItem>
+                                    <SelectItem value="atacante">Atacante</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="avaliacao">Avaliação: {avaliacao}</Label>
+                            <div className="py-4">
+                                <Slider
+                                    id="avaliacao"
+                                    min={1}
+                                    max={5}
+                                    step={0.5}
+                                    value={[avaliacao]}
+                                    onValueChange={(value) => setAvaliacao(value[0])}
+                                    disabled={isLoading}
+                                />
+                                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>1</span>
+                                    <span>2</span>
+                                    <span>3</span>
+                                    <span>4</span>
+                                    <span>5</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <Button type="submit" className="w-full bg-green-700 hover:bg-green-800" disabled={isLoading}>
-                        {isLoading ? 'Salvando...' : 'Salvar Jogador'}
-                    </Button>
-                </form>
+                        <Button type="submit" className="w-full bg-green-700 hover:bg-green-800" disabled={isLoading}>
+                            {isLoading ? 'Salvando...' : 'Salvar Jogador'}
+                        </Button>
+                    </form>
+                </div>
             </div>
         </main>
     );

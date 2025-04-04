@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import Image from 'next/image';
+import Logo from '@/public/futebol.png';
 
 export default function Cadastro() {
     const [nome, setNome] = useState('');
@@ -72,14 +74,15 @@ export default function Cadastro() {
     };
 
     return (
-        <main className="flex min-h-screen flex-col p-4 bg-gradient-to-b from-green-800 to-green-950">
-            <Link href="/" className="text-white mb-6 flex items-center">
+        <main className="flex min-h-screen flex-col  max-sm:p-0 p-4 bg-gradient-to-b from-green-800 to-green-950">
+            <Link href="/" className="text-white mb-6 flex items-center max-sm:hidden">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Voltar
             </Link>
 
-            <div className="w-full max-w-md mx-auto p-6 bg-white rounded-xl shadow-lg">
-                <h1 className="text-2xl font-bold text-center text-green-800 mb-6">Cadastro</h1>
+            <div className="w-full max-w-md mx-auto p-6 bg-white rounded-xl shadow-lg max-sm:max-w-full max-sm:h-screen max-sm:rounded-none flex flex-col justify-center">
+                <Image src={Logo} alt="Logo" width={90} height={90} className="mb-6 object-fill mx-auto" />
+                <h1 className="text-2xl font-bold text-center text-green-800 mb-6">Cadastrar no MatchMaker</h1>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">

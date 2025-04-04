@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { useSession } from 'next-auth/react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { Header } from '@/components/header';
+import { Loading } from '@/components/loading';
 
 interface Time {
     id: number;
@@ -85,12 +87,14 @@ export default function NovaPartida() {
                 throw new Error('Erro ao criar partida');
             }
 
+            const partida = await response.json();
+
             toast({
                 title: 'Sucesso',
                 description: 'Partida criada com sucesso',
             });
 
-            router.push('/partidas');
+            router.push('/partidas/' + partida.id);
         } catch (error) {
             console.error('Erro ao criar partida:', error);
             toast({
@@ -104,65 +108,61 @@ export default function NovaPartida() {
     };
 
     if (status === 'loading' || isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-100">
-                <p>Carregando...</p>
-            </div>
-        );
+        return <Loading />;
     }
 
     return (
-        <main className="min-h-screen bg-gray-100 p-4">
-            <div className="flex items-center justify-between mb-6">
+        <main className="min-h-screen bg-gray-100">
+            <Header titulo={'Nova Partida'}>
                 <Link href="/partidas" className="flex items-center text-green-800">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Voltar
                 </Link>
-                <h1 className="text-xl font-bold text-green-800">Nova Partida</h1>
-                <div className="w-6"></div> {/* Espaçador para centralizar o título */}
+            </Header>
+
+            <div className="p-4">
+                <Card>
+                    <CardContent className="p-4">
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="timeA">Time A</Label>
+                                <Select value={timeA} onValueChange={setTimeA} required>
+                                    <SelectTrigger id="timeA">
+                                        <SelectValue placeholder="Selecione o time" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {times.map((time) => (
+                                            <SelectItem key={time.id} value={time.id.toString()}>
+                                                {time.nome}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="timeB">Time B</Label>
+                                <Select value={timeB} onValueChange={setTimeB} required>
+                                    <SelectTrigger id="timeB">
+                                        <SelectValue placeholder="Selecione o time" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {times.map((time) => (
+                                            <SelectItem key={time.id} value={time.id.toString()} disabled={time.id.toString() === timeA}>
+                                                {time.nome}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <Button type="submit" className="w-full bg-green-700 hover:bg-green-800" disabled={!timeA || !timeB || timeA === timeB}>
+                                <Play className="mr-2 h-4 w-4" /> Iniciar Partida
+                            </Button>
+                        </form>
+                    </CardContent>
+                </Card>
             </div>
-
-            <Card>
-                <CardContent className="p-4">
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="timeA">Time A</Label>
-                            <Select value={timeA} onValueChange={setTimeA} required>
-                                <SelectTrigger id="timeA">
-                                    <SelectValue placeholder="Selecione o time" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {times.map((time) => (
-                                        <SelectItem key={time.id} value={time.id.toString()}>
-                                            {time.nome}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="timeB">Time B</Label>
-                            <Select value={timeB} onValueChange={setTimeB} required>
-                                <SelectTrigger id="timeB">
-                                    <SelectValue placeholder="Selecione o time" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {times.map((time) => (
-                                        <SelectItem key={time.id} value={time.id.toString()} disabled={time.id.toString() === timeA}>
-                                            {time.nome}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <Button type="submit" className="w-full bg-green-700 hover:bg-green-800" disabled={!timeA || !timeB || timeA === timeB}>
-                            <Play className="mr-2 h-4 w-4" /> Iniciar Partida
-                        </Button>
-                    </form>
-                </CardContent>
-            </Card>
         </main>
     );
 }

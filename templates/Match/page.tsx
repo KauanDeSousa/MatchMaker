@@ -9,6 +9,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useToast } from '@/hooks/use-toast';
+import { Header } from '@/components/header';
+import { Loading } from '@/components/loading';
 
 interface Partida {
     id: number;
@@ -47,8 +49,6 @@ export default function Partidas() {
             }
 
             const data = await response.json();
-
-            console.log(data);
 
             setPartidas(data);
         } catch (error) {
@@ -102,55 +102,51 @@ export default function Partidas() {
     };
 
     if (status === 'loading' || isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-100">
-                <p>Carregando...</p>
-            </div>
-        );
+        return <Loading />;
     }
 
     return (
-        <main className="min-h-screen bg-gray-100 p-4">
-            <div className="flex items-center justify-between mb-6">
+        <main className="min-h-screen bg-gray-100">
+            <Header titulo={'Partidas'}>
                 <Link href="/dashboard" className="flex items-center text-green-800">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Voltar
                 </Link>
-                <h1 className="text-xl font-bold text-green-800">Partidas</h1>
-                <div className="w-6"></div> {/* Espaçador para centralizar o título */}
-            </div>
+            </Header>
 
-            <div className="mb-4">
-                <Link href="/partidas/nova">
-                    <Button className="w-full bg-green-700 hover:bg-green-800">Nova Partida</Button>
-                </Link>
-            </div>
-
-            <div className="space-y-4 flex flex-col">
-                {partidas.map((partida) => (
-                    <Link key={partida.id} href={`/partidas/${partida.id}`}>
-                        <Card className="hover:shadow-md transition-shadow">
-                            <CardContent className="p-4">
-                                <div className="flex justify-between items-center mb-2">
-                                    <div className="text-sm text-gray-500">
-                                        {new Date(partida.data).toLocaleDateString()} {new Date(partida.data).toLocaleTimeString()}
-                                    </div>
-                                    {getStatusBadge(partida.status)}
-                                </div>
-
-                                <div className="flex justify-between items-center">
-                                    <div className="text-lg font-medium">{partida.timeA.nome}</div>
-                                    <div className="text-xl font-bold">
-                                        {partida.placarA} - {partida.placarB}
-                                    </div>
-                                    <div className="text-lg font-medium">{partida.timeB.nome}</div>
-                                </div>
-
-                                <div className="flex justify-center mt-2">{getStatusIcon(partida.status)}</div>
-                            </CardContent>
-                        </Card>
+            <div className="p-4">
+                <div className="mb-4">
+                    <Link href="/partidas/nova">
+                        <Button className="w-full bg-green-700 hover:bg-green-800">Nova Partida</Button>
                     </Link>
-                ))}
+                </div>
+
+                <div className="space-y-4 flex flex-col">
+                    {partidas.map((partida) => (
+                        <Link key={partida.id} href={`/partidas/${partida.id}`}>
+                            <Card className="hover:shadow-md transition-shadow">
+                                <CardContent className="p-4">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <div className="text-sm text-gray-500">
+                                            {new Date(partida.data).toLocaleDateString()} {new Date(partida.data).toLocaleTimeString()}
+                                        </div>
+                                        {getStatusBadge(partida.status)}
+                                    </div>
+
+                                    <div className="flex justify-between items-center">
+                                        <div className="text-lg font-medium">{partida.timeA.nome}</div>
+                                        <div className="text-xl font-bold">
+                                            {partida.placarA} - {partida.placarB}
+                                        </div>
+                                        <div className="text-lg font-medium">{partida.timeB.nome}</div>
+                                    </div>
+
+                                    <div className="flex justify-center mt-2">{getStatusIcon(partida.status)}</div>
+                                </CardContent>
+                            </Card>
+                        </Link>
+                    ))}
+                </div>
             </div>
         </main>
     );

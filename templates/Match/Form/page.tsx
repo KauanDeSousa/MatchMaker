@@ -12,6 +12,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { Header } from '@/components/header';
+import { Loading } from '@/components/loading';
 
 interface Jogador {
     id: number;
@@ -305,11 +307,7 @@ export default function DetalhePartida({ params }: { params: { value: string } }
     };
 
     if (status === 'loading' || isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-100">
-                <p>Carregando...</p>
-            </div>
-        );
+        return <Loading />;
     }
 
     if (!partida) {
@@ -321,146 +319,150 @@ export default function DetalhePartida({ params }: { params: { value: string } }
     }
 
     return (
-        <main className="min-h-screen bg-gray-100 p-4">
-            <div className="flex items-center justify-between mb-6">
+        <main className="min-h-screen bg-gray-100">
+            <Header titulo={'Partida'}>
                 <Link href="/partidas" className="flex items-center text-green-800">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Voltar
                 </Link>
-                <h1 className="text-xl font-bold text-green-800">Partida</h1>
-                <div className="w-6"></div> {/* Espaçador para centralizar o título */}
-            </div>
-
-            <Card className="mb-4">
-                <CardContent className="p-4">
-                    <div className="flex justify-between items-center mb-2">
-                        <div className="text-sm text-gray-500">{new Date(partida.data).toLocaleDateString('pt-BR')}</div>
-                        {getStatusBadge(partida.status)}
-                    </div>
-
-                    <div className="flex justify-between items-center mb-4">
-                        <div className="text-lg font-medium">{partida.timeA.nome}</div>
-                        <div className="text-2xl font-bold">
-                            {partida.placarA} - {partida.placarB}
-                        </div>
-                        <div className="text-lg font-medium">{partida.timeB.nome}</div>
-                    </div>
-
-                    <div className="flex justify-center mb-4">
-                        <div className="text-xl font-mono">{formatarTempo(tempo)}</div>
-                    </div>
-
-                    <div className="flex justify-center space-x-2">
-                        {partida.status !== 'encerrado' && (
-                            <>
-                                <Button
-                                    variant={timerAtivo ? 'outline' : 'default'}
-                                    className={timerAtivo ? 'border-red-500 text-red-500' : 'bg-green-700 hover:bg-green-800'}
-                                    onClick={toggleTimer}
-                                    disabled={isSalvando}
-                                >
-                                    {timerAtivo ? <Pause className="mr-2 h-4 w-4" /> : <Play className="mr-2 h-4 w-4" />}
-                                    {timerAtivo ? 'Pausar' : 'Iniciar'}
-                                </Button>
-
-                                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                                    <DialogTrigger asChild>
-                                        <Button variant="outline" disabled={isSalvando}>
-                                            <Plus className="mr-2 h-4 w-4" />
-                                            Evento
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                        <DialogHeader>
-                                            <DialogTitle>Registrar Evento</DialogTitle>
-                                        </DialogHeader>
-                                        <div className="space-y-4 py-4">
-                                            <div className="space-y-2">
-                                                <Label htmlFor="tipo-evento">Tipo de Evento</Label>
-                                                <Select value={tipoEvento} onValueChange={setTipoEvento}>
-                                                    <SelectTrigger id="tipo-evento">
-                                                        <SelectValue placeholder="Selecione o tipo" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="gol">Gol</SelectItem>
-                                                        <SelectItem value="assistencia">Assistência</SelectItem>
-                                                        <SelectItem value="cartao_amarelo">Cartão Amarelo</SelectItem>
-                                                        <SelectItem value="cartao_vermelho">Cartão Vermelho</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-
-                                            <div className="space-y-2">
-                                                <Label htmlFor="time">Time</Label>
-                                                <Select value={timeEvento} onValueChange={setTimeEvento}>
-                                                    <SelectTrigger id="time">
-                                                        <SelectValue placeholder="Selecione o time" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="A">{partida.timeA.nome}</SelectItem>
-                                                        <SelectItem value="B">{partida.timeB.nome}</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-
-                                            <div className="space-y-2">
-                                                <Label htmlFor="jogador">Jogador</Label>
-                                                <Select value={jogadorEvento} onValueChange={setJogadorEvento} disabled={!timeEvento}>
-                                                    <SelectTrigger id="jogador">
-                                                        <SelectValue placeholder="Selecione o jogador" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {getJogadoresPorTime(timeEvento).map((jogador: Jogador) => (
-                                                            <SelectItem key={jogador.id} value={jogador.id.toString()}>
-                                                                {jogador.nome}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-
-                                            <Button
-                                                className="w-full bg-green-700 hover:bg-green-800"
-                                                onClick={registrarEvento}
-                                                disabled={!tipoEvento || !timeEvento || !jogadorEvento || isSalvando}
-                                            >
-                                                {isSalvando ? 'Registrando...' : 'Registrar'}
-                                            </Button>
-                                        </div>
-                                    </DialogContent>
-                                </Dialog>
-
-                                <Button variant="outline" className="border-red-500 text-red-500" onClick={finalizarPartida} disabled={isSalvando}>
-                                    {isSalvando ? 'Encerrando...' : 'Encerrar'}
-                                </Button>
-                            </>
-                        )}
-                    </div>
-                </CardContent>
-            </Card>
-
-            <div className="space-y-4">
-                <h2 className="text-lg font-medium">Eventos da Partida</h2>
-
-                <Card>
+            </Header>
+            <div className="p-4">
+                <Card className="mb-4">
                     <CardContent className="p-4">
-                        {partida.eventos.length === 0 ? (
-                            <div className="text-center py-4 text-gray-500">Nenhum evento registrado</div>
-                        ) : (
-                            <div className="space-y-2">
-                                {partida.eventos.map((evento) => (
-                                    <div key={evento.id} className="flex items-center justify-between border-b pb-2 last:border-0">
-                                        <div className="flex items-center">
-                                            {getEventoIcon(evento.tipo)}
-                                            <span className="ml-2">{evento.jogador.nome}</span>
-                                        </div>
-                                        <div className="text-sm text-gray-500">{evento.minuto}'</div>
-                                    </div>
-                                ))}
+                        <div className="flex justify-between items-center mb-2">
+                            <div className="text-sm text-gray-500">{new Date(partida.data).toLocaleDateString('pt-BR')}</div>
+                            {getStatusBadge(partida.status)}
+                        </div>
+
+                        <div className="flex justify-between items-center mb-4">
+                            <div className="text-lg font-medium">{partida.timeA.nome}</div>
+                            <div className="text-2xl font-bold">
+                                {partida.placarA} - {partida.placarB}
                             </div>
-                        )}
+                            <div className="text-lg font-medium">{partida.timeB.nome}</div>
+                        </div>
+
+                        <div className="flex justify-center mb-4">
+                            <div className="text-xl font-mono">{formatarTempo(tempo)}</div>
+                        </div>
+
+                        <div className="flex justify-center flex-col gap-3">
+                            {partida.status !== 'encerrado' && (
+                                <>
+                                    <Button
+                                        variant={timerAtivo ? 'outline' : 'default'}
+                                        className={timerAtivo ? 'border-red-500 text-red-500' : 'bg-green-700 hover:bg-green-800'}
+                                        onClick={toggleTimer}
+                                        disabled={isSalvando}
+                                    >
+                                        {timerAtivo ? <Pause className="mr-2 h-4 w-4" /> : <Play className="mr-2 h-4 w-4" />}
+                                        {timerAtivo ? 'Pausar' : 'Iniciar'}
+                                    </Button>
+
+                                    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                                        <DialogTrigger asChild>
+                                            <Button variant="outline" disabled={isSalvando}>
+                                                <Plus className="mr-2 h-4 w-4" />
+                                                Evento
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle>Registrar Evento</DialogTitle>
+                                            </DialogHeader>
+                                            <div className="space-y-4 py-4">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="tipo-evento">Tipo de Evento</Label>
+                                                    <Select value={tipoEvento} onValueChange={setTipoEvento}>
+                                                        <SelectTrigger id="tipo-evento">
+                                                            <SelectValue placeholder="Selecione o tipo" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="gol">Gol</SelectItem>
+                                                            <SelectItem value="assistencia">Assistência</SelectItem>
+                                                            <SelectItem value="cartao_amarelo">Cartão Amarelo</SelectItem>
+                                                            <SelectItem value="cartao_vermelho">Cartão Vermelho</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="time">Time</Label>
+                                                    <Select value={timeEvento} onValueChange={setTimeEvento}>
+                                                        <SelectTrigger id="time">
+                                                            <SelectValue placeholder="Selecione o time" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="A">{partida.timeA.nome}</SelectItem>
+                                                            <SelectItem value="B">{partida.timeB.nome}</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="jogador">Jogador</Label>
+                                                    <Select value={jogadorEvento} onValueChange={setJogadorEvento} disabled={!timeEvento}>
+                                                        <SelectTrigger id="jogador">
+                                                            <SelectValue placeholder="Selecione o jogador" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {getJogadoresPorTime(timeEvento).map((jogador: Jogador) => (
+                                                                <SelectItem key={jogador.id} value={jogador.id.toString()}>
+                                                                    {jogador.nome}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+
+                                                <Button
+                                                    className="w-full bg-green-700 hover:bg-green-800"
+                                                    onClick={registrarEvento}
+                                                    disabled={!tipoEvento || !timeEvento || !jogadorEvento || isSalvando}
+                                                >
+                                                    {isSalvando ? 'Registrando...' : 'Registrar'}
+                                                </Button>
+                                            </div>
+                                        </DialogContent>
+                                    </Dialog>
+
+                                    <Button
+                                        variant="outline"
+                                        className="border-red-500 text-red-500"
+                                        onClick={finalizarPartida}
+                                        disabled={isSalvando}
+                                    >
+                                        {isSalvando ? 'Encerrando...' : 'Encerrar'}
+                                    </Button>
+                                </>
+                            )}
+                        </div>
                     </CardContent>
                 </Card>
+
+                <div className="space-y-4">
+                    <h2 className="text-lg font-medium">Eventos da Partida</h2>
+
+                    <Card>
+                        <CardContent className="p-4">
+                            {partida.eventos.length === 0 ? (
+                                <div className="text-center py-4 text-gray-500">Nenhum evento registrado</div>
+                            ) : (
+                                <div className="space-y-2">
+                                    {partida.eventos.map((evento) => (
+                                        <div key={evento.id} className="flex items-center justify-between border-b pb-2 last:border-0">
+                                            <div className="flex items-center">
+                                                {getEventoIcon(evento.tipo)}
+                                                <span className="ml-2">{evento.jogador.nome}</span>
+                                            </div>
+                                            <div className="text-sm text-gray-500">{evento.minuto}'</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </main>
     );
