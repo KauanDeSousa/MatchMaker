@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, Users } from 'lucide-react';
+import { ArrowLeft, Plus, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -74,6 +74,14 @@ export default function Times() {
             </Header>
 
             <div className="p-4">
+                <div className="mb-4">
+                    <Link href="/times/novo">
+                        <Button className="w-full bg-green-700 hover:bg-green-800">
+                            <Plus className="h-4 w-4" /> Novo time
+                        </Button>
+                    </Link>
+                </div>
+
                 <div className="mb-4">
                     <Link href="/times/gerar">
                         <Button className="w-full bg-green-700 hover:bg-green-800">Gerar Times Equilibrados</Button>

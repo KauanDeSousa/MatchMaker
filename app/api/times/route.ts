@@ -21,9 +21,7 @@ export async function GET(req: Request) {
             include: {
                 jogadores: true,
             },
-            orderBy: {
-                createdAt: 'desc',
-            },
+            orderBy: [{ status: 'asc' }, { createdAt: 'desc' }],
         });
 
         // Calcular média de avaliação para cada time
