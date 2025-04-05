@@ -351,12 +351,24 @@ export default function DetalhePartida({ params }: { params: { value: string } }
                                 <>
                                     <Button
                                         variant={timerAtivo ? 'outline' : 'default'}
-                                        className={timerAtivo ? 'border-red-500 text-red-500' : 'bg-green-700 hover:bg-green-800'}
+                                        className={`flex items-center justify-center ${
+                                            timerAtivo ? 'bg-red-700 hover:bg-red-800' : 'bg-green-700 hover:bg-green-800'
+                                        }`}
                                         onClick={toggleTimer}
                                         disabled={isSalvando}
                                     >
-                                        {timerAtivo ? <Pause className="mr-2 h-4 w-4" /> : <Play className="mr-2 h-4 w-4" />}
-                                        {timerAtivo ? 'Pausar' : 'Iniciar'}
+                                        {timerAtivo ? <Pause className="h-4 w-4 text-white" /> : <Play className="h-4 w-4 text-white" />}
+                                        {timerAtivo ? <p className="text-white">Pausar</p> : <p className="text-white">Iniciar</p>}
+                                    </Button>
+
+                                    <Button
+                                        variant="outline"
+                                        className="flex items-center justify-center border-red-500 text-red-500"
+                                        onClick={finalizarPartida}
+                                        disabled={isSalvando}
+                                    >
+                                        {<Pause className="h-4 w-4" />}
+                                        {isSalvando ? 'Encerrando...' : 'Encerrar'}
                                     </Button>
 
                                     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -425,15 +437,6 @@ export default function DetalhePartida({ params }: { params: { value: string } }
                                             </div>
                                         </DialogContent>
                                     </Dialog>
-
-                                    <Button
-                                        variant="outline"
-                                        className="border-red-500 text-red-500"
-                                        onClick={finalizarPartida}
-                                        disabled={isSalvando}
-                                    >
-                                        {isSalvando ? 'Encerrando...' : 'Encerrar'}
-                                    </Button>
                                 </>
                             )}
                         </div>

@@ -3,6 +3,18 @@ import { getServerSession } from 'next-auth/next';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 
+type EstatisticaJogador = {
+    id: number;
+    nome: string;
+    gols: number;
+    assistencias: number;
+    cartaoAmarelo: number;
+    cartaoVermelho: number;
+    jogos: number;
+    golsPorJogo: number;
+    assistenciasPorJogo: number;
+};
+
 // GET - Obter estatísticas dos jogadores
 export async function GET(req: Request) {
     try {
@@ -46,30 +58,34 @@ export async function GET(req: Request) {
         });
 
         // Calcular estatísticas para cada jogador
-        const estatisticas = jogadores.map((jogador) => {
-            const eventosJogador = eventos.filter((e) => e.jogadorId === jogador.id);
+        const estatisticas = jogadores
+            .map((jogador) => {
+                const eventosJogador = eventos.filter((e) => e.jogadorId === jogador.id);
 
-            const gols = eventosJogador.filter((e) => e.tipo === 'gol').length;
-            const assistencias = eventosJogador.filter((e) => e.tipo === 'assistencia').length;
-            const cartoesAmarelos = eventosJogador.filter((e) => e.tipo === 'cartao_amarelo').length;
-            const cartoesVermelhos = eventosJogador.filter((e) => e.tipo === 'cartao_vermelho').length;
+                if (eventosJogador.length === 0) return null;
 
-            // Contar jogos (partidas únicas em que o jogador teve eventos)
-            const jogosIds = [...new Set(eventosJogador.map((e) => e.partidaId))];
-            const jogos = jogosIds.length;
+                const gols = eventosJogador.filter((e) => e.tipo === 'gol').length;
+                const assistencias = eventosJogador.filter((e) => e.tipo === 'assistencia').length;
+                const cartoesAmarelos = eventosJogador.filter((e) => e.tipo === 'cartao_amarelo').length;
+                const cartoesVermelhos = eventosJogador.filter((e) => e.tipo === 'cartao_vermelho').length;
 
-            return {
-                id: jogador.id,
-                nome: jogador.nome,
-                gols,
-                assistencias,
-                cartaoAmarelo: cartoesAmarelos,
-                cartaoVermelho: cartoesVermelhos,
-                jogos,
-                golsPorJogo: jogos > 0 ? gols / jogos : 0,
-                assistenciasPorJogo: jogos > 0 ? assistencias / jogos : 0,
-            };
-        });
+                // Contar jogos (partidas únicas em que o jogador teve eventos)
+                const jogosIds = [...new Set(eventosJogador.map((e) => e.partidaId))];
+                const jogos = jogosIds.length;
+
+                return {
+                    id: jogador.id,
+                    nome: jogador.nome,
+                    gols,
+                    assistencias,
+                    cartaoAmarelo: cartoesAmarelos,
+                    cartaoVermelho: cartoesVermelhos,
+                    jogos,
+                    golsPorJogo: jogos > 0 ? gols / jogos : 0,
+                    assistenciasPorJogo: jogos > 0 ? assistencias / jogos : 0,
+                };
+            })
+            .filter(Boolean) as EstatisticaJogador[];
 
         estatisticas.sort((a, b) => {
             if (b.gols !== a.gols) {
